@@ -13,7 +13,7 @@ failing test and saves it to `failed_tests/`.
 ## Build
 
 ```bash
-g++ -std=c++17 src/main.cpp -o stressHub
+make
 ```
 
 ## Usage
