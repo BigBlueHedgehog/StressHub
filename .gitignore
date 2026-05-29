@@ -1,0 +1,12 @@
+# Temporary files
+tmp/
+
+# Compiled binaries
+stressHub
+
+# Failed tests
+failed_tests/*
+!failed_tests/.gitkeep
+
+#Editor
+.vscode/
