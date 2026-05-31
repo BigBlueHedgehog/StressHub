@@ -1,3 +1,7 @@
+#include "config.h"
+#include "compiler.h"
+#include "runner.h"
+
 #include <cstdlib>
 #include <filesystem>
 #include <fstream>
@@ -5,42 +9,14 @@
 #include <string>
 #include <vector>
 
-std::string getFileName(const std::string &file) {
-    std::filesystem::path path(file);
+
+std::string getFileName(const ProgramFile &file) {
+    std::filesystem::path path(file.path);
     return path.stem().string();
 }
 
-bool compileFile(const std::string &file, const std::string &buildName) {
-    std::string command = "g++ " + file + " -o " + buildName;
-    int code = system(command.c_str());
-    if (code != 0) {
-        std::cerr << "Compilation failed: " << file << '\n';
-        return false;
-    }
-    return true;
-}
 
-bool runFile(const std::string &file, const std::string &buildName, const std::string &outputFile,
-             const std::string &inputFile) {
-    std::string command = "./" + buildName + " < " + inputFile + " > " + outputFile;
-    int code = system(command.c_str());
-    if (code != 0) {
-        std::cerr << "Runtime failed: " << file << '\n';
-        return false;
-    }
-    return true;
-}
 
-bool runGenFile(const std::string &file, const std::string &buildName,
-                const std::string &inputFile) {
-    std::string command = "./" + buildName + " > " + inputFile;
-    int code = system(command.c_str());
-    if (code != 0) {
-        std::cerr << "Runtime failed: " << file << '\n';
-        return false;
-    }
-    return true;
-}
 
 std::vector<std::string> readTokens(const std::string &file) {
     std::ifstream in(file);
@@ -69,46 +45,41 @@ void printFile(const std::string &title, const std::string &file) {
 }
 
 int main(int argc, char *argv[]) {
-    if (argc != 5) {
+    Config config;
+    try {
+        config = parseInput(argc, argv);
+    } catch (...) {
         std::cerr << "Usage: ./stressHub examples/gen.cpp examples/slow.cpp "
                      "examples/fast.cpp countOfTests"
                   << '\n';
         return 1;
     }
+    config.gen.executablePath = "tmp/gen";
+    config.slow.executablePath = "tmp/slow";
+    config.fast.executablePath = "tmp/fast";
+
     std::filesystem::create_directories("tmp");
 
-    std::string genFile = argv[1];
-    std::string slowFile = argv[2];
-    std::string fastFile = argv[3];
-    int testCnt;
-
-    try {
-        testCnt = std::stoi(argv[4]);
-    } catch (...) {
-        std::cerr << "Invalid countOfTests: " << argv[4] << '\n';
-        return 1;
-    }
-    if (testCnt <= 0) {
-        std::cerr << "Invalid countOfTests: " << testCnt << '\n';
-        return 1;
-    }
+    
 
     std::string inputFile = "tmp/input.txt";
-    std::string slowOutputFile = "tmp/" + getFileName(slowFile) + "Output.txt";
-    std::string fastOutputFile = "tmp/" + getFileName(fastFile) + "Output.txt";
+    std::string slowOutputFile = "tmp/" + getFileName(config.slow) + "Output.txt";
+    std::string fastOutputFile = "tmp/" + getFileName(config.fast) + "Output.txt";
 
-    std::string failedTestFile = "failed_tests/test.in";
-    std::string expected = "failed_tests/expected.out";
-    std::string got = "failed_tests/got.out";
+    std::string failedTestFile;
+    std::string expected;
+    std::string got;
 
-    if (!compileFile(genFile, "tmp/gen")) return 1;
-    if (!compileFile(slowFile, "tmp/slow")) return 1;
-    if (!compileFile(fastFile, "tmp/fast")) return 1;
+    
 
-    for (int it = 1; it <= testCnt; ++it) {
-        if (!runGenFile(genFile, "tmp/gen", inputFile)) return 1;
-        if (!runFile(slowFile, "tmp/slow", slowOutputFile, inputFile)) return 1;
-        if (!runFile(fastFile, "tmp/fast", fastOutputFile, inputFile)) return 1;
+    if (!compileFile(config.gen)) return 1;
+    if (!compileFile(config.slow)) return 1;
+    if (!compileFile(config.fast)) return 1;
+
+    for (int it = 1; it <= config.testCnt; ++it) {
+        if (!runGenFile(config.gen, inputFile)) return 1;
+        if (!runFile(config.slow, slowOutputFile, inputFile)) return 1;
+        if (!runFile(config.fast, fastOutputFile, inputFile)) return 1;
 
         auto correctAns = readTokens(slowOutputFile);
         auto checkedAns = readTokens(fastOutputFile);
