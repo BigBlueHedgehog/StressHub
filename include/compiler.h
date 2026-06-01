@@ -1,7 +1,10 @@
 #pragma once
 
 #include <string>
-#include <program_file.h>
 
+#include "config.h"
+#include "program_file.h"
 
 bool compileFile(const ProgramFile& file);
+
+bool compileAll(const Config& config);

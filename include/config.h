@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <program_file.h>
 
+#include "program_file.h"
 
 struct Config {
     ProgramFile gen;

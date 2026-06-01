@@ -24,7 +24,7 @@ make
 This creates the executable:
 
 ```text
-./stresshub
+./stressHub
 ```
 
 Equivalent manual build command:
@@ -32,19 +32,20 @@ Equivalent manual build command:
 ```bash
 g++ -std=c++17 -Wall -Wextra -Iinclude \
   src/main.cpp src/config.cpp src/compiler.cpp src/runner.cpp \
-  -o stresshub
+  src/file_tools.cpp src/comparator.cpp \
+  -o stressHub
 ```
 
 ## Usage
 
 ```bash
-./stresshub <generator> <slow_solution> <fast_solution> <test_count>
+./stressHub <generator> <slow_solution> <fast_solution> <test_count>
 ```
 
 Example:
 
 ```bash
-./stresshub examples/gen.cpp examples/slow.cpp examples/fast.cpp 100
+./stressHub examples/gen.cpp examples/slow.cpp examples/fast.cpp 100
 ```
 
 StressHub will compile the three provided programs, then run:
@@ -93,7 +94,7 @@ make demo-fail
 or manually:
 
 ```bash
-./stresshub examples/gen.cpp examples/slow.cpp examples/fast.cpp 100
+./stressHub examples/gen.cpp examples/slow.cpp examples/fast.cpp 100
 ```
 
 This command is expected to stop when it finds a mismatch and return a non-zero
@@ -105,6 +106,20 @@ Remove the built executable and temporary files:
 
 ```bash
 make clean
+```
+
+Remove saved failed tests:
+
+```bash
+make clean-failed
+```
+
+## Format
+
+Format C++ source files with `clang-format`:
+
+```bash
+make format
 ```
 
 ## Notes

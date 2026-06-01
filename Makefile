@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Wextra -Iinclude
-TARGET = stresshub
-SRC = src/main.cpp src/config.cpp src/compiler.cpp src/runner.cpp
+TARGET = stressHub
+SRC = src/main.cpp src/config.cpp src/compiler.cpp src/runner.cpp src/file_tools.cpp src/comparator.cpp
 
 all: $(TARGET)
 
@@ -17,3 +17,9 @@ demo-fail: $(TARGET)
 clean:
 	rm -f $(TARGET)
 	rm -rf tmp/
+
+clean-failed:
+	rm -rf failed_tests/*
+
+format:
+	clang-format -i include/*.h src/*.cpp examples/*.cpp
