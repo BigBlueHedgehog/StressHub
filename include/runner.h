@@ -7,6 +7,6 @@
 
 bool runFile(const ProgramFile &file, const std::string &inputFile);
 
-bool runGenFile(const ProgramFile &file, const std::string &inputFile);
+bool runGenFile(const ProgramFile &file, const std::string &inputFile, int seed, int test_number);
 
-bool runAll(const Config &config, const std::string &inputFile);
+bool runAll(const Config &config, const std::string &inputFile, int test_number);

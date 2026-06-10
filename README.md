@@ -39,13 +39,25 @@ g++ -std=c++17 -Wall -Wextra -Iinclude \
 ## Usage
 
 ```bash
-./stressHub <generator> <slow_solution> <fast_solution> <test_count>
+./stressHub <generator> <slow_solution> <fast_solution> <test_count> [options]
 ```
+
+Options:
+
+- `--seed <value>` sets the base seed passed to the generator. StressHub also
+  passes the current test number, so failed tests can be reproduced.
+- `--help` prints the usage message and available options.
 
 Example:
 
 ```bash
 ./stressHub examples/gen.cpp examples/slow.cpp examples/fast.cpp 100
+```
+
+Example with a fixed seed:
+
+```bash
+./stressHub examples/gen.cpp examples/slow.cpp examples/fast.cpp 100 --seed 10
 ```
 
 StressHub will compile the three provided programs, then run:
